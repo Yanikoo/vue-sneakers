@@ -23,12 +23,29 @@ const onChangeSearchInput = (event) => {
 
 const fetchFavorites = async () => {
   try {
-    const {data} = await axios.get(`https://f32b821cc4008a80.mokky.dev/favorites`)
+    const {data: favorites } = await axios.get(`https://f32b821cc4008a80.mokky.dev/favorites`)
 
-    items.value = data
+    items.value = items.value.map(item => {
+      const favorite = favorites.find(favorite =>favorite.parentId === item.id);
+
+      if(!favorite) {
+        return item;
+      }
+
+      return {
+        ...item,
+        isFavorite: true,
+        favoriteId: favorite.id
+      };
+    })
+
   } catch (err) {
     console.log(err)
   }
+}
+
+const addToFavorite = async() => {
+  
 }
 
 const fetchItem = async () => {
@@ -56,43 +73,49 @@ const fetchItem = async () => {
   }
 }
 
-onMounted(fetchItem)
+onMounted(async () => {
+   await fetchItem();
+   await fetchFavorites();
+  
+})
 watch(filters,fetchItem)
 </script>
 
 <template>
-
-  <!-- <Drawer /> -->
-
-  <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14"> 
-    <Header />
-
-    <div class="px-10">
-      <div class="flex justify-between items-center">
-        <h2 class="text-3xl font-bold mb-8">Все кроссовки</h2>
-      
-        <div class="flex gap-4"> 
-           <select @change="onChangeSelect" class="py-2 px-3 border rounded-mb outline-none">
-            <option value="name">По названию</option>
-            <option value="price">По цене ( дешевые)</option>
-            <option value="-price">По цене ( дорогие)</option>
-          </select>
-            
-         
   
-          <div class="relative">
-            <img src="/search.svg" class="absolute left-3 top-3" />
-            <input 
-              @input="onChangeSearchInput"
-              class="border border-gray-200 rounded-md py-2 pl-11 pr-4 outline-none focus:border-gray-400 " 
-              type="text"
-              placeholder="Поиск..."
-            />
+  <div>
+    <!-- <Drawer /> -->
+  
+    <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-14"> 
+      <Header />
+  
+      <div class="px-10">
+        <div class="flex justify-between items-center">
+          <h2 class="text-3xl font-bold mb-8">Все кроссовки</h2>
+        
+          <div class="flex gap-4"> 
+             <select @change="onChangeSelect" class="py-2 px-3 border rounded-mb outline-none">
+              <option value="name">По названию</option>
+              <option value="price">По цене ( дешевые)</option>
+              <option value="-price">По цене ( дорогие)</option>
+            </select>
+              
+           
+    
+            <div class="relative">
+              <img src="/search.svg" class="absolute left-3 top-3" />
+              <input 
+                @input="onChangeSearchInput"
+                class="border border-gray-200 rounded-md py-2 pl-11 pr-4 outline-none focus:border-gray-400 " 
+                type="text"
+                placeholder="Поиск..."
+              />
+            </div>
           </div>
+        </div>  
+        <div class="mt-10"> 
+          <CardList  :items="items"/>
         </div>
-      </div>  
-      <div class="mt-10"> 
-        <CardList  :items="items"/>
       </div>
     </div>
   </div>
