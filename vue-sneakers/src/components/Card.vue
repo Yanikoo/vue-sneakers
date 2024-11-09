@@ -1,6 +1,8 @@
 <script setup>
+import {inject} from 'vue'
 
 defineProps({
+    id: Number,   
     title: String,
     imageUrl: String,
     price: Number,
@@ -8,8 +10,9 @@ defineProps({
     isAdded: Boolean,
     onClickAdd: Function,
     onClickFavorite: Function
-
 })
+
+
 
 </script>
 

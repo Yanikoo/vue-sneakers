@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch, } from 'vue'
+import { onMounted, provide, reactive, ref, watch, } from 'vue'
 import axios from 'axios'
 
 import Header from './components/Header.vue'
@@ -29,7 +29,7 @@ const fetchFavorites = async () => {
       const favorite = favorites.find(favorite =>favorite.parentId === item.id);
 
       if(!favorite) {
-        return item;
+        return item
       }
 
       return {
@@ -44,7 +44,10 @@ const fetchFavorites = async () => {
   }
 }
 
-const addToFavorite = async() => {
+const addToFavorite = async (item) => {
+  item.isFavorite = true
+  
+  console.log(item)
   
 }
 
@@ -79,6 +82,8 @@ onMounted(async () => {
   
 })
 watch(filters,fetchItem)
+
+provide('addToFavorite', addToFavorite)
 </script>
 
 <template>
